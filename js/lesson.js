@@ -65,4 +65,84 @@ const autoSlider = (i = 0) => {
 
 autoSlider(index)
 
+//convertor
 
+function setupCurrencyConverter() {
+    const som = document.querySelector('#som');
+    const usd = document.querySelector('#usd');
+    const eur = document.querySelector('#eur');
+
+    const request = new XMLHttpRequest();
+    request.open("GET", "../data/convertor.json");
+    request.setRequestHeader("Content-type", "application/json");
+    request.send();
+
+    request.onload = () => {
+        const response = JSON.parse(request.response);
+        const usdExchangeRate = response.usd;
+        const eurExchangeRate = response.eur;
+
+        function updateSomValue(inputValue) {
+            if (!isNaN(inputValue)) {
+                usd.value = (inputValue / usdExchangeRate).toFixed(2);
+                eur.value = (inputValue / eurExchangeRate).toFixed(2);
+            } else {
+                usd.value = "";
+                eur.value = "";
+            }
+        }
+
+        function updateUsdValue(inputValue) {
+            if (!isNaN(inputValue)) {
+                som.value = (inputValue * usdExchangeRate).toFixed(2);
+                eur.value = (inputValue * (usdExchangeRate / eurExchangeRate)).toFixed(2);
+            } else {
+                som.value = "";
+                eur.value = "";
+            }
+        }
+
+        function updateEurValue(inputValue) {
+            if (!isNaN(inputValue)) {
+                som.value = (inputValue * eurExchangeRate).toFixed(2);
+                usd.value = (inputValue * (eurExchangeRate / usdExchangeRate)).toFixed(2);
+            } else {
+                som.value = "";
+                usd.value = "";
+            }
+        }
+
+        som.oninput = () => {
+            const inputValue = parseFloat(som.value);
+            updateSomValue(inputValue);
+        };
+
+        usd.oninput = () => {
+            const inputValue = parseFloat(usd.value);
+            updateUsdValue(inputValue);
+        };
+
+        eur.oninput = () => {
+            const inputValue = parseFloat(eur.value);
+            updateEurValue(inputValue);
+        };
+    };
+}
+
+setupCurrencyConverter();
+
+
+
+
+
+// som.addEventListener('input', (event) => {
+//     const request = new XMLHttpRequest()
+//     request.open("GET", "../data/convertor.json")
+//     request.setRequestHeader("Content-type", "application/json")
+//     request.send()
+
+//     request.addEventListener('load', () => {
+//         const responce = JSON.parse(request.response)
+//         usd.value = (som.value / responce.usd).toFixed(2)
+//     })
+// })
